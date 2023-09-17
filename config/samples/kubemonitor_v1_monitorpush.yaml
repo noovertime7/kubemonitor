@@ -1,0 +1,6 @@
+apiVersion: kubemonitor.kubemonitor/v1
+kind: MonitorPush
+metadata:
+  name: monitorpush-sample
+spec:
+  # TODO(user): Add fields here

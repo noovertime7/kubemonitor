@@ -1,0 +1,16 @@
+domain: kubemonitor
+layout:
+- go.kubebuilder.io/v3
+projectName: kubemonitor
+repo: github.com/noovertime7/kubemonitor
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: kubemonitor
+  group: kubemonitor
+  kind: MonitorPush
+  path: github.com/noovertime7/kubemonitor/api/v1
+  version: v1
+version: "3"
