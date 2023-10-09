@@ -30,9 +30,10 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
-	kubemonitorv1 "github.com/noovertime7/kubemonitor/api/v1"
-	"github.com/noovertime7/kubemonitor/controllers"
+	kubemonitoriov1 "github.com/noovertime7/kubemonitor/api/v1"
+	"github.com/noovertime7/kubemonitor/internal/controller"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -44,7 +45,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(kubemonitorv1.AddToScheme(scheme))
+	utilruntime.Must(kubemonitoriov1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -67,11 +68,10 @@ func main() {
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
-		MetricsBindAddress:     metricsAddr,
-		Port:                   9443,
+		Metrics:                metricsserver.Options{BindAddress: metricsAddr},
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
-		LeaderElectionID:       "eb138a99.kubemonitor",
+		LeaderElectionID:       "eb138a99.kubemonitor.io",
 		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
 		// when the Manager ends. This requires the binary to immediately end when the
 		// Manager is stopped, otherwise, this setting is unsafe. Setting this significantly
@@ -89,11 +89,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.MonitorPushReconciler{
+	if err = (&controller.PrometheusPushReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "MonitorPush")
+		setupLog.Error(err, "unable to create controller", "controller", "PrometheusPush")
+		os.Exit(1)
+	}
+	if err = (&controller.MysqlMonitorReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "MysqlMonitor")
+		os.Exit(1)
+	}
+	if err = (&controller.RedisMonitorReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "RedisMonitor")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

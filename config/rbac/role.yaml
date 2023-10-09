@@ -2,13 +2,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  creationTimestamp: null
   name: manager-role
 rules:
 - apiGroups:
-  - kubemonitor.kubemonitor
+  - kubemonitor.io.kubemonitor.io
   resources:
-  - monitorpushes
+  - prometheuspushes
   verbs:
   - create
   - delete
@@ -18,15 +17,15 @@ rules:
   - update
   - watch
 - apiGroups:
-  - kubemonitor.kubemonitor
+  - kubemonitor.io.kubemonitor.io
   resources:
-  - monitorpushes/finalizers
+  - prometheuspushes/finalizers
   verbs:
   - update
 - apiGroups:
-  - kubemonitor.kubemonitor
+  - kubemonitor.io.kubemonitor.io
   resources:
-  - monitorpushes/status
+  - prometheuspushes/status
   verbs:
   - get
   - patch

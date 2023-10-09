@@ -2,18 +2,24 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/kubemonitor.kubemonitor_monitorpushes.yaml
+- bases/kubemonitor.io.kubemonitor.io_prometheuspushes.yaml
+- bases/kubemonitor.io.kubemonitor.io_mysqlmonitors.yaml
+- bases/kubemonitor.io.kubemonitor.io_redismonitors.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
-patchesStrategicMerge:
+patches:
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
 # patches here are for enabling the conversion webhook for each CRD
-#- patches/webhook_in_monitorpushes.yaml
+#- path: patches/webhook_in_prometheuspushes.yaml
+#- path: patches/webhook_in_mysqlmonitors.yaml
+#- path: patches/webhook_in_redismonitors.yaml
 #+kubebuilder:scaffold:crdkustomizewebhookpatch
 
 # [CERTMANAGER] To enable cert-manager, uncomment all the sections with [CERTMANAGER] prefix.
 # patches here are for enabling the CA injection for each CRD
-#- patches/cainjection_in_monitorpushes.yaml
+#- path: patches/cainjection_in_prometheuspushes.yaml
+#- path: patches/cainjection_in_mysqlmonitors.yaml
+#- path: patches/cainjection_in_redismonitors.yaml
 #+kubebuilder:scaffold:crdkustomizecainjectionpatch
 
 # the following config is for teaching kustomize how to do kustomization for CRDs.

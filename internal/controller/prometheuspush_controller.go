@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controllers
+package controller
 
 import (
 	"context"
@@ -24,29 +24,29 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	kubemonitorv1 "github.com/noovertime7/kubemonitor/api/v1"
+	kubemonitoriov1 "github.com/noovertime7/kubemonitor/api/v1"
 )
 
-// MonitorPushReconciler reconciles a MonitorPush object
-type MonitorPushReconciler struct {
+// PrometheusPushReconciler reconciles a PrometheusPush object
+type PrometheusPushReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=kubemonitor.kubemonitor,resources=monitorpushes,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=kubemonitor.kubemonitor,resources=monitorpushes/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=kubemonitor.kubemonitor,resources=monitorpushes/finalizers,verbs=update
+//+kubebuilder:rbac:groups=kubemonitor.io.kubemonitor.io,resources=prometheuspushes,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=kubemonitor.io.kubemonitor.io,resources=prometheuspushes/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=kubemonitor.io.kubemonitor.io,resources=prometheuspushes/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
-// the MonitorPush object against the actual cluster state, and then
+// the PrometheusPush object against the actual cluster state, and then
 // perform operations to make the cluster state reflect the state specified by
 // the user.
 //
 // For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.2/pkg/reconcile
-func (r *MonitorPushReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.16.0/pkg/reconcile
+func (r *PrometheusPushReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
@@ -55,8 +55,8 @@ func (r *MonitorPushReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *MonitorPushReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *PrometheusPushReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&kubemonitorv1.MonitorPush{}).
+		For(&kubemonitoriov1.PrometheusPush{}).
 		Complete(r)
 }

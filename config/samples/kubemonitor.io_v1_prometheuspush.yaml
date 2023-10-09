@@ -1,0 +1,12 @@
+apiVersion: kubemonitor.io.kubemonitor.io/v1
+kind: PrometheusPush
+metadata:
+  labels:
+    app.kubernetes.io/name: prometheuspush
+    app.kubernetes.io/instance: prometheuspush-sample
+    app.kubernetes.io/part-of: kubemonitor
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: kubemonitor
+  name: prometheuspush-sample
+spec:
+  # TODO(user): Add fields here

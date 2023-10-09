@@ -1,0 +1,12 @@
+apiVersion: kubemonitor.io.kubemonitor.io/v1
+kind: RedisMonitor
+metadata:
+  labels:
+    app.kubernetes.io/name: redismonitor
+    app.kubernetes.io/instance: redismonitor-sample
+    app.kubernetes.io/part-of: kubemonitor
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: kubemonitor
+  name: redismonitor-sample
+spec:
+  # TODO(user): Add fields here

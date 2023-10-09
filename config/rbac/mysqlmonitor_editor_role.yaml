@@ -1,0 +1,31 @@
+# permissions for end users to edit mysqlmonitors.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: mysqlmonitor-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: kubemonitor
+    app.kubernetes.io/part-of: kubemonitor
+    app.kubernetes.io/managed-by: kustomize
+  name: mysqlmonitor-editor-role
+rules:
+- apiGroups:
+  - kubemonitor.io.kubemonitor.io
+  resources:
+  - mysqlmonitors
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kubemonitor.io.kubemonitor.io
+  resources:
+  - mysqlmonitors/status
+  verbs:
+  - get

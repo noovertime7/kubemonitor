@@ -1,0 +1,27 @@
+# permissions for end users to view prometheuspushes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: prometheuspush-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: kubemonitor
+    app.kubernetes.io/part-of: kubemonitor
+    app.kubernetes.io/managed-by: kustomize
+  name: prometheuspush-viewer-role
+rules:
+- apiGroups:
+  - kubemonitor.io.kubemonitor.io
+  resources:
+  - prometheuspushes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - kubemonitor.io.kubemonitor.io
+  resources:
+  - prometheuspushes/status
+  verbs:
+  - get

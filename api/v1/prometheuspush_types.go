@@ -23,15 +23,17 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// MonitorPushSpec defines the desired state of MonitorPush
-type MonitorPushSpec struct {
-	Interval    metav1.Time       `json:"interval"`
-	Model       string            `json:"model"`
-	ModelConfig map[string]string `json:"modelConfig"`
+// PrometheusPushSpec defines the desired state of PrometheusPush
+type PrometheusPushSpec struct {
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+
+	// Foo is an example field of PrometheusPush. Edit prometheuspush_types.go to remove/update
+	Foo string `json:"foo,omitempty"`
 }
 
-// MonitorPushStatus defines the observed state of MonitorPush
-type MonitorPushStatus struct {
+// PrometheusPushStatus defines the observed state of PrometheusPush
+type PrometheusPushStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
@@ -39,24 +41,24 @@ type MonitorPushStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// MonitorPush is the Schema for the monitorpushes API
-type MonitorPush struct {
+// PrometheusPush is the Schema for the prometheuspushes API
+type PrometheusPush struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   MonitorPushSpec   `json:"spec,omitempty"`
-	Status MonitorPushStatus `json:"status,omitempty"`
+	Spec   PrometheusPushSpec   `json:"spec,omitempty"`
+	Status PrometheusPushStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// MonitorPushList contains a list of MonitorPush
-type MonitorPushList struct {
+// PrometheusPushList contains a list of PrometheusPush
+type PrometheusPushList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []MonitorPush `json:"items"`
+	Items           []PrometheusPush `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&MonitorPush{}, &MonitorPushList{})
+	SchemeBuilder.Register(&PrometheusPush{}, &PrometheusPushList{})
 }
