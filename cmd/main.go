@@ -63,6 +63,7 @@ func main() {
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.StringVar(&logLevel, "log-level", "info", "log level")
+
 	opts := zap.Options{
 		Level:   SetLevel(logLevel),
 		Encoder: getEncoder(),
