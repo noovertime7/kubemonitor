@@ -45,6 +45,7 @@ import (
 
 	//+kubebuilder:scaffold:imports
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/mysql"
+	_ "github.com/noovertime7/kubemonitor/internal/handlers/redis"
 )
 
 var (
@@ -144,15 +145,8 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
-}
 
-func getEncoder() zapcore.Encoder {
-	encoderConfig := nativeZap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	encoderConfig.TimeKey = "time"
-	encoderConfig.EncodeDuration = zapcore.SecondsDurationEncoder
-	encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
-	return zapcore.NewJSONEncoder(encoderConfig)
+	wker.StopAll()
 }
 
 func SetLevel(level string) zapcore.LevelEnabler {

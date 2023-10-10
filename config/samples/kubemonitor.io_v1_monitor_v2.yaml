@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/created-by: kubemonitor
   name: monitor-sample2
 spec:
-  period: "5s"
+  period: "15s"
   model:
     name: "mysql"
     config:

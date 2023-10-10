@@ -49,7 +49,7 @@ func (ins *Instance) Name() string {
 	return inputName
 }
 
-func (ins *Instance) Init(config map[string]string) error {
+func (ins *Instance) Init(config input.ConfigMap) error {
 	ins.Address = config["address"]
 	ins.Username = config["username"]
 	ins.Password = config["password"]

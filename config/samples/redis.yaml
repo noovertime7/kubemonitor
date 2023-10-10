@@ -1,0 +1,14 @@
+apiVersion: kubemonitor.io.kubemonitor.io/v1
+kind: Monitor
+metadata:
+  name: monitor-redis1
+spec:
+  labels:
+    region: test
+  period: "25s"
+  model:
+    name: "redis"
+    config:
+      address: "127.0.0.1"
+      port: "6379"
+      pool_size: "10"

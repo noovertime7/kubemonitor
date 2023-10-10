@@ -11,6 +11,7 @@ type Worker interface {
 	AddWorkerTask(name string)
 	Run(name string, period time.Duration, f func()) error
 	Stop(name string)
+	StopAll()
 }
 
 func NewWorker() Worker {
@@ -49,4 +50,10 @@ func (m *worker) Stop(name string) {
 	defer m.lock.Unlock()
 	m.Tasks[name] <- struct{}{}
 	delete(m.Tasks, name)
+}
+
+func (m *worker) StopAll() {
+	for _, ch := range m.Tasks {
+		ch <- struct{}{}
+	}
 }

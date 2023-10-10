@@ -77,6 +77,8 @@ func Process(slist *types.SampleList, additionalLabels map[string]string) *types
 			}
 		}
 
+		ss[i].Labels["instance"] = ss[i].Labels["address"]
+
 		//
 		//// add label: agent_hostname
 		//if _, has := ss[i].Labels[agentHostnameLabelKey]; !has {

@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/created-by: kubemonitor
   name: monitor-sample
 spec:
-  period: "5s"
+  period: "15s"
   labels:
     region: test
   model:
