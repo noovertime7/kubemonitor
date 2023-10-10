@@ -25,15 +25,29 @@ import (
 
 // PrometheusPushSpec defines the desired state of PrometheusPush
 type PrometheusPushSpec struct {
+	Url           string   `json:"url"`
+	BasicAuthUser string   `json:"basic_auth_user"`
+	BasicAuthPass string   `json:"basic_auth_pass"`
+	Headers       []string `json:"headers"`
+
+	Timeout             int64 `json:"timeout"`
+	DialTimeout         int64 `json:"dial_timeout"`
+	MaxIdleConnsPerHost int   `json:"max_idle_conns_per_host"`
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of PrometheusPush. Edit prometheuspush_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Writer Writer `json:"writer"`
+}
+
+type Writer struct {
+	Batch    int `json:"batch"`
+	ChanSize int `json:"chan_size"`
 }
 
 // PrometheusPushStatus defines the observed state of PrometheusPush
 type PrometheusPushStatus struct {
+	LastPush metav1.Time `json:"lastPush"`
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }

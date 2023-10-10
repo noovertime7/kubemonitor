@@ -18,6 +18,9 @@ package main
 
 import (
 	"flag"
+
+	nativeZap "go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -53,13 +56,16 @@ func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
+	var logLevel string
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
+	flag.StringVar(&logLevel, "log-level", "info", "log level")
 	opts := zap.Options{
-		Development: true,
+		Level:   SetLevel(logLevel),
+		Encoder: getEncoder(),
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
@@ -126,4 +132,19 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+}
+
+func getEncoder() zapcore.Encoder {
+	encoderConfig := nativeZap.NewProductionEncoderConfig()
+	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	encoderConfig.TimeKey = "time"
+	encoderConfig.EncodeDuration = zapcore.SecondsDurationEncoder
+	encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	return zapcore.NewJSONEncoder(encoderConfig)
+}
+
+func SetLevel(level string) zapcore.LevelEnabler {
+	atomicLevel := nativeZap.NewAtomicLevel()
+	_ = atomicLevel.UnmarshalText([]byte(level))
+	return atomicLevel
 }

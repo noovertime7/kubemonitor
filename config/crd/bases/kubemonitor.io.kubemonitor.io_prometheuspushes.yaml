@@ -34,13 +34,54 @@ spec:
           spec:
             description: PrometheusPushSpec defines the desired state of PrometheusPush
             properties:
-              foo:
+              basic_auth_pass:
+                type: string
+              basic_auth_user:
+                type: string
+              dial_timeout:
+                format: int64
+                type: integer
+              headers:
+                items:
+                  type: string
+                type: array
+              max_idle_conns_per_host:
+                type: integer
+              timeout:
+                format: int64
+                type: integer
+              url:
+                type: string
+              writer:
                 description: Foo is an example field of PrometheusPush. Edit prometheuspush_types.go
                   to remove/update
-                type: string
+                properties:
+                  batch:
+                    type: integer
+                  chan_size:
+                    type: integer
+                required:
+                - batch
+                - chan_size
+                type: object
+            required:
+            - basic_auth_pass
+            - basic_auth_user
+            - dial_timeout
+            - headers
+            - max_idle_conns_per_host
+            - timeout
+            - url
+            - writer
             type: object
           status:
             description: PrometheusPushStatus defines the observed state of PrometheusPush
+            properties:
+              lastPush:
+                format: date-time
+                type: string
+            required:
+            - lastPush
             type: object
         type: object
     served: true
