@@ -35,4 +35,13 @@ resources:
   kind: RedisMonitor
   path: github.com/noovertime7/kubemonitor/api/v1
   version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: kubemonitor.io
+  group: kubemonitor.io
+  kind: Monitor
+  path: github.com/noovertime7/kubemonitor/api/v1
+  version: v1
 version: "3"

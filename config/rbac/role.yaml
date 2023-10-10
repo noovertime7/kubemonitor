@@ -7,7 +7,7 @@ rules:
 - apiGroups:
   - kubemonitor.io.kubemonitor.io
   resources:
-  - mysqlmonitors
+  - monitors
   verbs:
   - create
   - delete
@@ -19,13 +19,13 @@ rules:
 - apiGroups:
   - kubemonitor.io.kubemonitor.io
   resources:
-  - mysqlmonitors/finalizers
+  - monitors/finalizers
   verbs:
   - update
 - apiGroups:
   - kubemonitor.io.kubemonitor.io
   resources:
-  - mysqlmonitors/status
+  - monitors/status
   verbs:
   - get
   - patch
@@ -52,32 +52,6 @@ rules:
   - kubemonitor.io.kubemonitor.io
   resources:
   - prometheuspushes/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - kubemonitor.io.kubemonitor.io
-  resources:
-  - redismonitors
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - kubemonitor.io.kubemonitor.io
-  resources:
-  - redismonitors/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - kubemonitor.io.kubemonitor.io
-  resources:
-  - redismonitors/status
   verbs:
   - get
   - patch

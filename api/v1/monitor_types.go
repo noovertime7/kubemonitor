@@ -23,17 +23,20 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// MysqlMonitorSpec defines the desired state of MysqlMonitor
-type MysqlMonitorSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of MysqlMonitor. Edit mysqlmonitor_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+// MonitorSpec defines the desired state of Monitor
+type MonitorSpec struct {
+	Model  Model             `json:"model"`
+	Period metav1.Duration   `json:"period"`
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
-// MysqlMonitorStatus defines the observed state of MysqlMonitor
-type MysqlMonitorStatus struct {
+type Model struct {
+	Name   string            `json:"name"`
+	Config map[string]string `json:"config"`
+}
+
+// MonitorStatus defines the observed state of Monitor
+type MonitorStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
@@ -41,24 +44,24 @@ type MysqlMonitorStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// MysqlMonitor is the Schema for the mysqlmonitors API
-type MysqlMonitor struct {
+// Monitor is the Schema for the monitors API
+type Monitor struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   MysqlMonitorSpec   `json:"spec,omitempty"`
-	Status MysqlMonitorStatus `json:"status,omitempty"`
+	Spec   MonitorSpec   `json:"spec,omitempty"`
+	Status MonitorStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// MysqlMonitorList contains a list of MysqlMonitor
-type MysqlMonitorList struct {
+// MonitorList contains a list of Monitor
+type MonitorList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []MysqlMonitor `json:"items"`
+	Items           []Monitor `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&MysqlMonitor{}, &MysqlMonitorList{})
+	SchemeBuilder.Register(&Monitor{}, &MonitorList{})
 }

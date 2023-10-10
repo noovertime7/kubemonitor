@@ -3,4 +3,5 @@ resources:
 - kubemonitor.io_v1_prometheuspush.yaml
 - kubemonitor.io_v1_mysqlmonitor.yaml
 - kubemonitor.io_v1_redismonitor.yaml
+- kubemonitor.io_v1_monitor.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

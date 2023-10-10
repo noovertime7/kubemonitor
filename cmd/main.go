@@ -19,9 +19,14 @@ package main
 import (
 	"flag"
 
+	"github.com/noovertime7/kubemonitor/internal/writer"
+	"github.com/noovertime7/kubemonitor/pkg/input"
+	"github.com/noovertime7/kubemonitor/pkg/worker"
+
+	"os"
+
 	nativeZap "go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -37,7 +42,9 @@ import (
 
 	kubemonitoriov1 "github.com/noovertime7/kubemonitor/api/v1"
 	"github.com/noovertime7/kubemonitor/internal/controller"
+
 	//+kubebuilder:scaffold:imports
+	_ "github.com/noovertime7/kubemonitor/internal/handlers/mysql"
 )
 
 var (
@@ -53,25 +60,38 @@ func init() {
 }
 
 func main() {
-	var metricsAddr string
-	var enableLeaderElection bool
-	var probeAddr string
-	var logLevel string
+	var (
+		logLevel             string
+		probeAddr            string
+		enableLeaderElection bool
+		metricsAddr          string
+		maxWriterQueueSize   int
+	)
+
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.StringVar(&logLevel, "log-level", "info", "log level")
+	flag.IntVar(&maxWriterQueueSize, "max-writer-queue-size", 1000, "max-writer-queue-size")
 
 	opts := zap.Options{
-		Level:   SetLevel(logLevel),
-		Encoder: getEncoder(),
+		Development: true,
+		ZapOpts: []nativeZap.Option{
+			nativeZap.AddCaller(),
+			nativeZap.AddCallerSkip(1),
+		},
+		//Encoder:     getEncoder(),
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	logger := zap.New(zap.UseFlagOptions(&opts), zap.JSONEncoder(func(encoderConfig *zapcore.EncoderConfig) {
+		encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	}), zap.Level(SetLevel(logLevel)))
+
+	ctrl.SetLogger(logger)
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -96,25 +116,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controller.PrometheusPushReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
+	writersMgr := writer.NewWriter(maxWriterQueueSize, logger)
+	wker := worker.NewWorker()
+
+	if err = controller.NewPrometheusPushReconciler(mgr.GetClient(), mgr.GetScheme(), writersMgr).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "PrometheusPush")
 		os.Exit(1)
 	}
-	if err = (&controller.MysqlMonitorReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "MysqlMonitor")
-		os.Exit(1)
-	}
-	if err = (&controller.RedisMonitorReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "RedisMonitor")
+
+	if err = controller.NewMonitorReconciler(mgr.GetClient(), mgr.GetScheme(), writersMgr, wker, input.Factory).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Monitor")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
