@@ -3,6 +3,7 @@ package worker
 import (
 	"fmt"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"log"
 	"sync"
 	"time"
 )
@@ -13,47 +14,56 @@ type Worker interface {
 	Stop(name string)
 	StopAll()
 }
+type workers struct {
+	Tasks sync.Map
+}
+
+type workerTask struct {
+	stopCh chan struct{}
+}
 
 func NewWorker() Worker {
-	return &worker{
-		Tasks: map[string]chan struct{}{},
-		lock:  &sync.Mutex{},
+	return &workers{
+		Tasks: sync.Map{},
 	}
 }
 
-type worker struct {
-	Tasks map[string]chan struct{}
-	lock  *sync.Mutex
-}
-
-func (m *worker) AddWorkerTask(name string) {
-	m.lock.Lock()
-	defer m.lock.Unlock()
-
-	m.Tasks[name] = make(chan struct{})
-}
-
-func (m *worker) Run(name string, period time.Duration, f func()) error {
-	m.lock.Lock()
-	defer m.lock.Unlock()
-
-	stopCh, has := m.Tasks[name]
-	if !has {
-		return fmt.Errorf("%s not register", name)
+func (w *workers) AddWorkerTask(name string) {
+	task := &workerTask{
+		stopCh: make(chan struct{}),
 	}
-	go wait.Until(f, period, stopCh)
+	w.Tasks.Store(name, task)
+}
+
+func (w *workers) Run(name string, period time.Duration, f func()) error {
+	task, ok := w.Tasks.Load(name)
+	if !ok {
+		return fmt.Errorf("%s not registered", name)
+	}
+
+	taskObj := task.(*workerTask)
+	go wait.Until(f, period, taskObj.stopCh)
 	return nil
 }
 
-func (m *worker) Stop(name string) {
-	m.lock.Lock()
-	defer m.lock.Unlock()
-	m.Tasks[name] <- struct{}{}
-	delete(m.Tasks, name)
+func (w *workers) Stop(name string) {
+	task, ok := w.Tasks.Load(name)
+	if !ok {
+		return
+	}
+
+	taskObj := task.(*workerTask)
+	close(taskObj.stopCh)
+	w.Tasks.Delete(name)
+
+	log.Println(name, "stop")
 }
 
-func (m *worker) StopAll() {
-	for _, ch := range m.Tasks {
-		ch <- struct{}{}
-	}
+func (w *workers) StopAll() {
+	w.Tasks.Range(func(key, value interface{}) bool {
+		taskObj := value.(*workerTask)
+		close(taskObj.stopCh)
+		w.Tasks.Delete(key)
+		return true
+	})
 }
