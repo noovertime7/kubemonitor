@@ -75,7 +75,7 @@ func main() {
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.StringVar(&logLevel, "log-level", "info", "log level")
-	flag.IntVar(&maxWriterQueueSize, "max-writer-queue-size", 1000, "max-writer-queue-size")
+	flag.IntVar(&maxWriterQueueSize, "max-writer-queue-size", 100000, "max-writer-queue-size")
 
 	opts := zap.Options{
 		Development: true,

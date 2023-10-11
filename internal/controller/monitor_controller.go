@@ -55,6 +55,7 @@ func (r *monitorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		if apierrors.IsNotFound(err) {
 			logger.Info("monitor not found")
 			r.worker.Stop(req.Name)
+			r.worker.Range()
 			return ctrl.Result{}, nil
 		}
 		logger.Error(err, "error getting mysql monitor")
@@ -71,9 +72,9 @@ func (r *monitorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	}
 	logger.Info("init handler config success")
 
-	r.worker.AddWorkerTask(model.Name)
+	r.worker.AddWorkerTask(monitor.Name)
 
-	err = r.worker.Run(model.Name, monitor.Spec.Period.Duration, func() {
+	err = r.worker.Run(monitor.Name, monitor.Spec.Period.Duration, func() {
 		err := r.factory.Gather(model.Name)
 		if err != nil {
 			logger.Error(err, "gather error")

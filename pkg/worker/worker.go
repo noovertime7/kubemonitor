@@ -12,6 +12,7 @@ type Worker interface {
 	AddWorkerTask(name string)
 	Run(name string, period time.Duration, f func()) error
 	Stop(name string)
+	Range()
 	StopAll()
 }
 type workers struct {
@@ -49,6 +50,7 @@ func (w *workers) Run(name string, period time.Duration, f func()) error {
 func (w *workers) Stop(name string) {
 	task, ok := w.Tasks.Load(name)
 	if !ok {
+		logrus.Errorf("stop failed,not load %s", name)
 		return
 	}
 
@@ -56,7 +58,16 @@ func (w *workers) Stop(name string) {
 	close(taskObj.stopCh)
 	w.Tasks.Delete(name)
 
-	logrus.Error(name, "stop")
+	logrus.Info(name, " stop")
+}
+
+func (w *workers) Range() {
+	w.Tasks.Range(walk)
+}
+
+func walk(key, value interface{}) bool {
+	logrus.Info("worker: ", key)
+	return true
 }
 
 func (w *workers) StopAll() {
