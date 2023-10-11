@@ -1,7 +1,7 @@
 apiVersion: kubemonitor.io.kubemonitor.io/v1
 kind: Monitor
 metadata:
-  name: monitor-redis1
+  name: elasticsearch1
 spec:
   labels:
     region: test

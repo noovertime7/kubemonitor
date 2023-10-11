@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/golang/snappy"
 	"github.com/prometheus/client_golang/api"
 	"github.com/prometheus/prometheus/prompb"
+	"github.com/sirupsen/logrus"
 )
 
 type Writer struct {
@@ -67,20 +67,20 @@ func (w Writer) Write(items []prompb.TimeSeries) {
 
 	data, err := proto.Marshal(req)
 	if err != nil {
-		log.Println("W! marshal prom data to proto got error:", err, "data:", items)
+		logrus.Error("W! marshal prom data to proto got error:", err, "data:", items)
 		return
 	}
 
 	if err := w.post(snappy.Encode(nil, data)); err != nil {
-		log.Println("W! post to", w.Opts.Url, "got error:", err)
-		log.Println("W! example timeseries:", items[0].String())
+		logrus.Error("W! post to", w.Opts.Url, "got error:", err)
+		logrus.Error("W! example timeseries:", items[0].String())
 	}
 }
 
 func (w Writer) post(req []byte) error {
 	httpReq, err := http.NewRequest("POST", w.Opts.Url, bytes.NewReader(req))
 	if err != nil {
-		log.Println("W! create remote write request got error:", err)
+		logrus.Error("W! create remote write request got error:", err)
 		return err
 	}
 
@@ -102,7 +102,7 @@ func (w Writer) post(req []byte) error {
 
 	resp, body, err := w.Client.Do(context.Background(), httpReq)
 	if err != nil {
-		log.Println("W! push data with remote write request got error:", err, "response body:", string(body))
+		logrus.Error("W! push data with remote write request got error:", err, "response body:", string(body))
 		return err
 	}
 

@@ -7,8 +7,8 @@ import (
 	"github.com/noovertime7/kubemonitor/pkg/input"
 	"github.com/noovertime7/kubemonitor/pkg/jsonx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
+	"github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"net/http"
 	"sort"
 	"strings"
@@ -187,7 +187,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 				// Gather node ID
 				if info.nodeID, err = ins.gatherNodeID(s + "/_nodes/_local/name"); err != nil {
 					slist.PushSample("elasticsearch", "up", 0, map[string]string{"address": s})
-					log.Println("E! failed to gather node id:", err)
+					logrus.Error("E! failed to gather node id:", err)
 					clusterErrorCh <- err
 					return
 				}
@@ -196,7 +196,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 				// whether this node is the Master
 				if info.masterID, err = ins.getCatMaster(s + "/_cat/master"); err != nil {
 					slist.PushSample("elasticsearch", "up", 0, map[string]string{"address": s})
-					log.Println("E! failed to get cat master:", err)
+					logrus.Error("E! failed to get cat master:", err)
 					clusterErrorCh <- err
 					return
 				}
@@ -230,7 +230,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 
 			// Always gather node stats
 			if err := ins.gatherNodeStats(url, s, slist); err != nil {
-				log.Println("E! failed to gather node stats:", err)
+				logrus.Error("E! failed to gather node stats:", err)
 				serversErrorCh <- err
 				return
 			}
@@ -241,7 +241,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 					url = url + "?level=" + ins.ClusterHealthLevel
 				}
 				if err := ins.gatherClusterHealth(url, s, slist); err != nil {
-					log.Println("E! failed to gather cluster health:", err)
+					logrus.Error("E! failed to gather cluster health:", err)
 					serversErrorCh <- err
 					return
 				}
@@ -249,7 +249,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 
 			if ins.ClusterStats && (ins.serverInfo[s].isMaster() || !ins.Local) {
 				if err := ins.gatherClusterStats(s+"/_cluster/stats", s, slist); err != nil {
-					log.Println("E! failed to gather cluster stats:", err)
+					logrus.Error("E! failed to gather cluster stats:", err)
 					serversErrorCh <- err
 					return
 				}
@@ -258,13 +258,13 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 			if len(ins.IndicesInclude) > 0 && (ins.serverInfo[s].isMaster() || !ins.Local) {
 				if ins.IndicesLevel != "shards" {
 					if err := ins.gatherIndicesStats(s+"/"+strings.Join(ins.IndicesInclude, ",")+"/_stats", s, slist); err != nil {
-						log.Println("E! failed to gather indices stats:", err)
+						logrus.Error("E! failed to gather indices stats:", err)
 						serversErrorCh <- err
 						return
 					}
 				} else {
 					if err := ins.gatherIndicesStats(s+"/"+strings.Join(ins.IndicesInclude, ",")+"/_stats?level=shards", s, slist); err != nil {
-						log.Println("E! failed to gather indices stats:", err)
+						logrus.Error("E! failed to gather indices stats:", err)
 						serversErrorCh <- err
 						return
 					}

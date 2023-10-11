@@ -2,8 +2,8 @@ package worker
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/util/wait"
-	"log"
 	"sync"
 	"time"
 )
@@ -56,7 +56,7 @@ func (w *workers) Stop(name string) {
 	close(taskObj.stopCh)
 	w.Tasks.Delete(name)
 
-	log.Println(name, "stop")
+	logrus.Error(name, "stop")
 }
 
 func (w *workers) StopAll() {

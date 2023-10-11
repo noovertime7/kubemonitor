@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 )
@@ -16,7 +16,7 @@ func (ins *Instance) gatherBinlog(slist *types.SampleList, db *sql.DB, globalTag
 	var logBin uint8
 	err := db.QueryRow(`SELECT @@log_bin`).Scan(&logBin)
 	if err != nil {
-		log.Println("E! failed to query SELECT @@log_bin:", err)
+		logrus.Error("E! failed to query SELECT @@log_bin:", err)
 		return
 	}
 
@@ -27,7 +27,7 @@ func (ins *Instance) gatherBinlog(slist *types.SampleList, db *sql.DB, globalTag
 
 	rows, err := db.Query(`SHOW BINARY LOGS`)
 	if err != nil {
-		log.Println("E! failed to query SHOW BINARY LOGS:", err)
+		logrus.Error("E! failed to query SHOW BINARY LOGS:", err)
 		return
 	}
 
@@ -35,7 +35,7 @@ func (ins *Instance) gatherBinlog(slist *types.SampleList, db *sql.DB, globalTag
 
 	columns, err := rows.Columns()
 	if err != nil {
-		log.Println("E! failed to get columns:", err)
+		logrus.Error("E! failed to get columns:", err)
 		return
 	}
 
@@ -59,7 +59,7 @@ func (ins *Instance) gatherBinlog(slist *types.SampleList, db *sql.DB, globalTag
 				return
 			}
 		default:
-			log.Println("E! invalid number of columns:", columnCount)
+			logrus.Error("E! invalid number of columns:", columnCount)
 		}
 
 		size += filesize

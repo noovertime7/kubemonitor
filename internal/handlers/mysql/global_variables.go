@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,7 +16,7 @@ func (ins *Instance) gatherGlobalVariables(slist *types.SampleList, db *sql.DB, 
 	}
 	rows, err := db.Query(SQL_GLOBAL_VARIABLES)
 	if err != nil {
-		log.Println("E! failed to query global variables:", err)
+		logrus.Error("E! failed to query global variables:", err)
 		return
 	}
 

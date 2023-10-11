@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/noovertime7/kubemonitor/pkg/input"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"time"
@@ -176,7 +176,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 	db, err := sql.Open("mysql", ins.dsn)
 	if err != nil {
 		slist.PushSample(inputName, "up", 0, tags)
-		log.Println("E! failed to open mysql:", err)
+		logrus.Error("E! failed to open mysql:", err)
 		return err
 	}
 
@@ -188,7 +188,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 
 	if err = db.Ping(); err != nil {
 		slist.PushSample(inputName, "up", 0, tags)
-		log.Println("E! failed to ping mysql:", err)
+		logrus.Error("E! failed to ping mysql:", err)
 		return err
 	}
 

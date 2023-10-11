@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 	"regexp"
 	"strconv"
 	"strings"
@@ -20,7 +20,7 @@ func (ins *Instance) gatherGlobalStatus(slist *types.SampleList, db *sql.DB, glo
 	}
 	rows, err := db.Query(SQL_GLOBAL_STATUS)
 	if err != nil {
-		log.Println("E! failed to query global status:", err)
+		logrus.Error("E! failed to query global status:", err)
 		return
 	}
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/noovertime7/kubemonitor/pkg/conv"
 	"github.com/noovertime7/kubemonitor/pkg/input"
-	"log"
+	"github.com/sirupsen/logrus"
 	"regexp"
 	"strconv"
 	"strings"
@@ -91,7 +91,7 @@ func (ins *Instance) Gather(slist *types.SampleList) error {
 	slist.PushFront(types.NewSample(inputName, "ping_use_seconds", time.Since(begun).Seconds(), tags))
 	if err != nil {
 		slist.PushFront(types.NewSample(inputName, "up", 0, tags))
-		log.Println("E! failed to ping redis:", ins.Address, "error:", err)
+		logrus.Error("E! failed to ping redis:", ins.Address, "error:", err)
 		return err
 	} else {
 		slist.PushFront(types.NewSample(inputName, "up", 1, tags))
@@ -107,7 +107,7 @@ func (ins *Instance) gatherCommandValues(slist *types.SampleList, tags map[strin
 	for _, cmd := range ins.Commands {
 		val, err := ins.client.Do(context.Background(), cmd.Command...).Result()
 		if err != nil {
-			log.Println("E! failed to exec redis command:", cmd.Command)
+			logrus.Error("E! failed to exec redis command:", cmd.Command)
 			continue
 		}
 
@@ -116,7 +116,7 @@ func (ins *Instance) gatherCommandValues(slist *types.SampleList, tags map[strin
 		}
 		fval, err := conv.ToFloat64(val)
 		if err != nil {
-			log.Println("E! failed to convert result of command:", cmd.Command, "error:", err)
+			logrus.Error("E! failed to convert result of command:", cmd.Command, "error:", err)
 			continue
 		}
 
@@ -135,7 +135,7 @@ func (ins *Instance) gatherInfoAll(slist *types.SampleList, tags map[string]stri
 	}
 
 	if err != nil {
-		log.Println("E! failed to call redis `info all`:", err)
+		logrus.Error("E! failed to call redis `info all`:", err)
 		return
 	}
 

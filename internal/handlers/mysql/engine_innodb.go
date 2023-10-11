@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,7 +16,7 @@ func (ins *Instance) gatherEngineInnodbStatus(slist *types.SampleList, db *sql.D
 	}
 	rows, err := db.Query(SQL_ENGINE_INNODB_STATUS)
 	if err != nil {
-		log.Println("E! failed to query engine innodb status:", err)
+		logrus.Error("E! failed to query engine innodb status:", err)
 		return
 	}
 
@@ -26,7 +26,7 @@ func (ins *Instance) gatherEngineInnodbStatus(slist *types.SampleList, db *sql.D
 	// First row should contain the necessary info. If many rows returned then it's unknown case.
 	if rows.Next() {
 		if err := rows.Scan(&typeCol, &nameCol, &statusCol); err != nil {
-			log.Println("E! failed to scan result, sql:", SQL_ENGINE_INNODB_STATUS, "error:", err)
+			logrus.Error("E! failed to scan result, sql:", SQL_ENGINE_INNODB_STATUS, "error:", err)
 			return
 		}
 	}

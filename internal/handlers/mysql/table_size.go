@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 func (ins *Instance) gatherTableSize(slist *types.SampleList, db *sql.DB, globalTags map[string]string, isSystem bool) {
@@ -22,7 +22,7 @@ func (ins *Instance) gatherTableSize(slist *types.SampleList, db *sql.DB, global
 
 	rows, err := db.Query(query)
 	if err != nil {
-		log.Println("E! failed to get table size:", err)
+		logrus.Error("E! failed to get table size:", err)
 		return
 	}
 
@@ -36,7 +36,7 @@ func (ins *Instance) gatherTableSize(slist *types.SampleList, db *sql.DB, global
 
 		err = rows.Scan(&schema, &table, &indexSize, &dataSize)
 		if err != nil {
-			log.Println("E! failed to scan rows:", err)
+			logrus.Error("E! failed to scan rows:", err)
 			return
 		}
 

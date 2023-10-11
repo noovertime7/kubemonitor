@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 func (ins *Instance) gatherProcesslistByUser(slist *types.SampleList, db *sql.DB, globalTags map[string]string) {
@@ -14,7 +14,7 @@ func (ins *Instance) gatherProcesslistByUser(slist *types.SampleList, db *sql.DB
 
 	rows, err := db.Query(SQL_INFO_SCHEMA_PROCESSLIST_BY_USER)
 	if err != nil {
-		log.Println("E! failed to get processlist:", err)
+		logrus.Error("E! failed to get processlist:", err)
 		return
 	}
 
@@ -28,7 +28,7 @@ func (ins *Instance) gatherProcesslistByUser(slist *types.SampleList, db *sql.DB
 
 		err = rows.Scan(&user, &connections)
 		if err != nil {
-			log.Println("E! failed to scan rows:", err)
+			logrus.Error("E! failed to scan rows:", err)
 			return
 		}
 

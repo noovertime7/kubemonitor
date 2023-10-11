@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -36,12 +36,12 @@ func (ins *Instance) gatherSlaveStatus(slist *types.SampleList, db *sql.DB, glob
 
 	rows, err := querySlaveStatus(db)
 	if err != nil {
-		log.Println("E! failed to query slave status:", err)
+		logrus.Error("E! failed to query slave status:", err)
 		return
 	}
 
 	if rows == nil {
-		log.Println("E! failed to query slave status: rows is nil")
+		logrus.Error("E! failed to query slave status: rows is nil")
 		return
 	}
 
@@ -49,7 +49,7 @@ func (ins *Instance) gatherSlaveStatus(slist *types.SampleList, db *sql.DB, glob
 
 	slaveCols, err := rows.Columns()
 	if err != nil {
-		log.Println("E! failed to get columns of slave rows:", err)
+		logrus.Error("E! failed to get columns of slave rows:", err)
 		return
 	}
 

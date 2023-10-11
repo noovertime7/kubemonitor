@@ -61,7 +61,8 @@ func (r *monitorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return ctrl.Result{}, err
 	}
 
-	model := original.Spec.Model
+	monitor := original.DeepCopy()
+	model := monitor.Spec.Model
 	logger = logger.WithValues("model", model.Name)
 
 	if err := r.factory.InitConfig(model.Name, model.Config); err != nil {
@@ -70,9 +71,9 @@ func (r *monitorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	}
 	logger.Info("init handler config success")
 
-	r.worker.AddWorkerTask(req.Name)
+	r.worker.AddWorkerTask(model.Name)
 
-	err = r.worker.Run(req.Name, original.Spec.Period.Duration, func() {
+	err = r.worker.Run(model.Name, monitor.Spec.Period.Duration, func() {
 		err := r.factory.Gather(model.Name)
 		if err != nil {
 			logger.Error(err, "gather error")
@@ -84,7 +85,7 @@ func (r *monitorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			logger.Error(err, "factory list error")
 			return
 		}
-		r.forward(logger, Process(list, original.Spec.Labels))
+		r.forward(logger, Process(list, monitor.Spec.Labels))
 	})
 	if err != nil {
 		logger.Error(err, "start  monitor error")

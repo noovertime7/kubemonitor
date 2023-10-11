@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -95,7 +95,7 @@ func (ins *Instance) gatherProcesslistByState(slist *types.SampleList, db *sql.D
 
 	rows, err := db.Query(SQL_INFO_SCHEMA_PROCESSLIST)
 	if err != nil {
-		log.Println("E! failed to get processlist:", err)
+		logrus.Error("E! failed to get processlist:", err)
 		return
 	}
 
@@ -119,7 +119,7 @@ func (ins *Instance) gatherProcesslistByState(slist *types.SampleList, db *sql.D
 
 		err = rows.Scan(&command, &state, &count)
 		if err != nil {
-			log.Println("W! failed to scan rows:", err)
+			logrus.Error("W! failed to scan rows:", err)
 			return
 		}
 		// each state has its mapping

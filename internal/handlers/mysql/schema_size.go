@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/noovertime7/kubemonitor/pkg/tagx"
 	"github.com/noovertime7/kubemonitor/pkg/types"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 func (ins *Instance) gatherSchemaSize(slist *types.SampleList, db *sql.DB, globalTags map[string]string) {
@@ -14,7 +14,7 @@ func (ins *Instance) gatherSchemaSize(slist *types.SampleList, db *sql.DB, globa
 
 	rows, err := db.Query(SQL_QUERY_SCHEMA_SIZE)
 	if err != nil {
-		log.Println("E! failed to get schema size:", err)
+		logrus.Error("E! failed to get schema size:", err)
 		return
 	}
 
@@ -28,7 +28,7 @@ func (ins *Instance) gatherSchemaSize(slist *types.SampleList, db *sql.DB, globa
 
 		err = rows.Scan(&schema, &size)
 		if err != nil {
-			log.Println("E! failed to scan rows:", err)
+			logrus.Error("E! failed to scan rows:", err)
 			return
 		}
 
