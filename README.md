@@ -31,6 +31,7 @@ kubectl apply -f config/samples/kubemonitor.io_v1_prometheuspush.yaml
 - mysql
 - redis
 - elasticsearch
+- clickhouse
 
 #### examples:
 see /config/samples/

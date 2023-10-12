@@ -41,6 +41,7 @@ import (
 	kubemonitoriov1 "github.com/noovertime7/kubemonitor/api/v1"
 	"github.com/noovertime7/kubemonitor/internal/controller"
 
+	_ "github.com/noovertime7/kubemonitor/internal/handlers/clickhouse"
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/elasticsearch"
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/mysql"
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/redis"

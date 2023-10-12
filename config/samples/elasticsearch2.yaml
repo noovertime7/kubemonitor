@@ -5,7 +5,7 @@ metadata:
 spec:
   labels:
     region: test
-  period: "15s"
+  period: "30s"
   model:
     name: "elasticsearch"
     config:

@@ -1,0 +1,14 @@
+apiVersion: kubemonitor.io.kubemonitor.io/v1
+kind: Monitor
+metadata:
+  name: clickhouse1
+spec:
+  labels:
+    region: test
+  period: "15s"
+  model:
+    name: "clickhouse"
+    config:
+      servers: "http://192.168.11.200:38123"
+      username: "default"
+      password: "Tsit@2022"

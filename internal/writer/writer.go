@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"net"
-	"net/http"
-	"time"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/snappy"
 	"github.com/prometheus/client_golang/api"
 	"github.com/prometheus/prometheus/prompb"
 	"github.com/sirupsen/logrus"
+	"net"
+	"net/http"
+	"time"
 )
 
 type Writer struct {
@@ -39,10 +38,11 @@ func newWriter(opt WriterOption) (Writer, error) {
 			// TLSClientConfig: tlsConfig,
 			Proxy: http.ProxyFromEnvironment,
 			DialContext: (&net.Dialer{
-				Timeout: time.Duration(opt.DialTimeout) * time.Millisecond,
+				Timeout: time.Duration(opt.DialTimeout) * time.Second,
 			}).DialContext,
-			ResponseHeaderTimeout: time.Duration(opt.Timeout) * time.Millisecond,
+			ResponseHeaderTimeout: time.Duration(opt.Timeout) * time.Second,
 			MaxIdleConnsPerHost:   opt.MaxIdleConnsPerHost,
+			MaxIdleConns:          100,
 		},
 	})
 

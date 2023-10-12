@@ -133,7 +133,7 @@ func (ins *Instance) Init(config input.ConfigMap) error {
 	ins.NumMostRecentIndices = config.ParseInt("num_most_recent_indices")
 
 	if ins.HTTPTimeout <= 0 {
-		ins.HTTPTimeout = time.Second * 5
+		ins.HTTPTimeout = time.Second * 10
 	}
 
 	if ins.ClusterHealthLevel == "" {
