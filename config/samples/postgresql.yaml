@@ -1,0 +1,12 @@
+apiVersion: kubemonitor.io.kubemonitor.io/v1
+kind: Monitor
+metadata:
+  name: postgresql1
+spec:
+  labels:
+    region: test
+  period: "15s"
+  model:
+    name: "postgresql"
+    config:
+      address: "host=10.20.110.51 port=8094 user=postgres password=Tsit@2023"

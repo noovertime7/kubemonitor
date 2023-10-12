@@ -44,6 +44,7 @@ import (
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/clickhouse"
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/elasticsearch"
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/mysql"
+	_ "github.com/noovertime7/kubemonitor/internal/handlers/postgresql"
 	_ "github.com/noovertime7/kubemonitor/internal/handlers/redis"
 )
 
