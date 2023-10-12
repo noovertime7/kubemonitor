@@ -19,6 +19,8 @@ type (
 		writerMap map[string]Writer
 		queue     *types2.SafeListLimited[*prompb.TimeSeries]
 		logger    logr.Logger
+		batch     int
+		chanSize  int
 		sync.Mutex
 
 		Snapshot
@@ -41,11 +43,13 @@ type WritersManager interface {
 	WriteTimeSeries(timeSeries []prompb.TimeSeries)
 }
 
-func NewWriter(maxSize int, logger logr.Logger) WritersManager {
+func NewWriter(chanSize, batch int, logger logr.Logger) WritersManager {
 	writers := &Writers{
+		chanSize:  chanSize,
+		batch:     batch,
 		logger:    logger,
 		writerMap: make(map[string]Writer),
-		queue:     types2.NewSafeListLimited[*prompb.TimeSeries](maxSize),
+		queue:     types2.NewSafeListLimited[*prompb.TimeSeries](chanSize),
 	}
 	go writers.loopRead()
 	return writers
@@ -79,7 +83,7 @@ func (ws *Writers) Register(name string, opt WriterOption) error {
 
 func (ws *Writers) loopRead() {
 	for {
-		series := ws.queue.PopBackN(10)
+		series := ws.queue.PopBackN(ws.batch)
 		if len(series) == 0 {
 			time.Sleep(time.Millisecond * 400)
 			continue

@@ -1,8 +1,0 @@
-[
-  {
-    "labels": {
-      "job": "node"
-    },
-    "targets": ["localhost:9100"]
-  }
-]

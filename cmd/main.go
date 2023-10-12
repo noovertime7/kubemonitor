@@ -67,6 +67,7 @@ func main() {
 		enableLeaderElection bool
 		metricsAddr          string
 		maxWriterQueueSize   int
+		writerBatch          int
 	)
 
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
@@ -75,7 +76,8 @@ func main() {
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.StringVar(&logLevel, "log-level", "info", "log level")
-	flag.IntVar(&maxWriterQueueSize, "max-writer-queue-size", 100000, "max-writer-queue-size")
+	flag.IntVar(&maxWriterQueueSize, "max-writer-queue-size", 1000000, "max-writer-queue-size")
+	flag.IntVar(&writerBatch, "writer-batch", 1000, "writer-batch")
 
 	opts := zap.Options{
 		Development: true,
@@ -117,7 +119,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	writersMgr := writer.NewWriter(maxWriterQueueSize, logger)
+	writersMgr := writer.NewWriter(maxWriterQueueSize, writerBatch, logger)
 	wker := worker.NewWorker()
 
 	if err = controller.NewPrometheusPushReconciler(mgr.GetClient(), mgr.GetScheme(), writersMgr).SetupWithManager(mgr); err != nil {

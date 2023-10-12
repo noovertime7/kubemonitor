@@ -30,15 +30,6 @@ type PrometheusPushSpec struct {
 	Timeout             int64 `json:"timeout"`
 	DialTimeout         int64 `json:"dial_timeout"`
 	MaxIdleConnsPerHost int   `json:"max_idle_conns_per_host"`
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	Writer Writer `json:"writer"`
-}
-
-type Writer struct {
-	Batch    int `json:"batch"`
-	ChanSize int `json:"chan_size"`
 }
 
 // PrometheusPushStatus defines the observed state of PrometheusPush

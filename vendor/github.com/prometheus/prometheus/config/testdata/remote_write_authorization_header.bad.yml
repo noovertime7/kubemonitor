@@ -1,5 +1,0 @@
-remote_write:
-  - url: localhost:9090
-    name: queue1
-    headers:
-      "authorization": "Basic YWxhZGRpbjpvcGVuc2VzYW1l"

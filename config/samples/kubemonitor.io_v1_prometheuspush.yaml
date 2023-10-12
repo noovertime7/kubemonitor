@@ -4,10 +4,7 @@ metadata:
   name: prometheuspush
 spec:
   url: "http://192.168.11.207:9090/api/v1/write"
-  timeout: 10
-  dial_timeout: 5
-  max_idle_conns_per_host: 10
-  writer:
-    batch: 10
-    chan_size: 100
+  timeout: 5000
+  dial_timeout: 2500
+  max_idle_conns_per_host: 100
 

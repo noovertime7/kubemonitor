@@ -1,5 +1,0 @@
-remote_write:
-  - url: localhost:9090
-    name: queue1
-    headers:
-      "x-prometheus-remote-write-version": "somehack"

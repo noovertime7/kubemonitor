@@ -1,4 +1,0 @@
-scrape_configs:
-  - puppetdb_sd_configs:
-      - url: ftp://puppet
-        query: 'resources { type = "Package" and title = "httpd" }'

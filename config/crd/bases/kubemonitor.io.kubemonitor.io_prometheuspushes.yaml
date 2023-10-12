@@ -52,22 +52,11 @@ spec:
                 type: integer
               url:
                 type: string
-              writer:
-                properties:
-                  batch:
-                    type: integer
-                  chan_size:
-                    type: integer
-                required:
-                - batch
-                - chan_size
-                type: object
             required:
             - dial_timeout
             - max_idle_conns_per_host
             - timeout
             - url
-            - writer
             type: object
           status:
             description: PrometheusPushStatus defines the observed state of PrometheusPush

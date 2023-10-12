@@ -1,3 +1,0 @@
-scrape_configs:
-  - http_sd_configs:
-      - url: ftp://example.com
