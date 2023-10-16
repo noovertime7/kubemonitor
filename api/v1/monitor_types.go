@@ -34,13 +34,14 @@ type Model struct {
 
 // MonitorStatus defines the observed state of Monitor
 type MonitorStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	LastPush metav1.Time `json:"lastPush,omitempty"`
 }
 
 // +genclient
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="Model",type="string",JSONPath=".spec.model.name",description="The monitor model"
+//+kubebuilder:printcolumn:name="lastPush",type="string",JSONPath=".status.lastPush",description="The monitor lastPush"
 
 // Monitor is the Schema for the monitors API
 type Monitor struct {

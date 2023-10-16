@@ -56,9 +56,9 @@ func newWriter(opt WriterOption) (Writer, error) {
 	}, nil
 }
 
-func (w Writer) Write(items []prompb.TimeSeries) {
+func (w Writer) Write(items []prompb.TimeSeries) error {
 	if len(items) == 0 {
-		return
+		return nil
 	}
 
 	req := &prompb.WriteRequest{
@@ -68,13 +68,14 @@ func (w Writer) Write(items []prompb.TimeSeries) {
 	data, err := proto.Marshal(req)
 	if err != nil {
 		logrus.Error("W! marshal prom data to proto got error:", err, "data:", items)
-		return
+		return err
 	}
 
 	if err := w.post(snappy.Encode(nil, data)); err != nil {
 		logrus.Error("W! post to", w.Opts.Url, "got error:", err)
 		logrus.Error("W! example timeseries:", items[0].String())
 	}
+	return nil
 }
 
 func (w Writer) post(req []byte) error {

@@ -1,0 +1,33 @@
+apiVersion: kubemonitor.io.kubemonitor.io/v1
+kind: Monitor
+metadata:
+  labels:
+    app.kubernetes.io/name: monitor
+    app.kubernetes.io/instance: monitor-sample
+    app.kubernetes.io/part-of: kubemonitor
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: kubemonitor
+  name: mysql-mysql
+spec:
+  period: "15s"
+  model:
+    name: "mysql"
+    config:
+      address: 10.20.110.120:33060
+      username: root
+      password: "Tsit@2022"
+      parameters: ""
+      timeout_seconds: "10"
+      extra_status_metrics: "true"
+      extra_innodb_metrics: "true"
+      gather_processlist_processes_by_state: "true"
+      gather_processlist_processes_by_user: "true"
+      gather_schema_size: "false"
+      gather_table_size: "false"
+      gather_system_table_size: "false"
+      gather_slave_status: "true"
+      disable_global_status: "false"
+      disable_global_variables: "false"
+      disable_innodb_status: "false"
+      disable_extra_innodb_status: "false"
+      disable_binlogs: "true"

@@ -33,10 +33,7 @@ func (m *SharedHandlerFactory) Gather(model string) error {
 	if !ok {
 		return fmt.Errorf("%s data list not found", model)
 	}
-	if err := handler.Gather(list); err != nil {
-		return err
-	}
-	return nil
+	return handler.Gather(list)
 }
 
 func (m *SharedHandlerFactory) GetHandler(model string) (HandlerFactory, error) {

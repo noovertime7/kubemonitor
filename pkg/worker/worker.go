@@ -11,6 +11,7 @@ import (
 type Worker interface {
 	AddWorkerTask(name string)
 	Run(name string, period time.Duration, f func()) error
+	Exist(name string) bool
 	Stop(name string)
 	Range()
 	StopAll()
@@ -29,11 +30,19 @@ func NewWorker() Worker {
 	}
 }
 
+func (w *workers) Exist(name string) bool {
+	_, ok := w.Tasks.Load(name)
+	return ok
+}
+
 func (w *workers) AddWorkerTask(name string) {
-	task := &workerTask{
-		stopCh: make(chan struct{}),
+	_, ok := w.Tasks.Load(name)
+	if !ok {
+		task := &workerTask{
+			stopCh: make(chan struct{}),
+		}
+		w.Tasks.Store(name, task)
 	}
-	w.Tasks.Store(name, task)
 }
 
 func (w *workers) Run(name string, period time.Duration, f func()) error {

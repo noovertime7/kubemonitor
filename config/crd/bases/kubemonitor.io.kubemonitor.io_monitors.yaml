@@ -14,7 +14,16 @@ spec:
     singular: monitor
   scope: Namespaced
   versions:
-  - name: v1
+  - additionalPrinterColumns:
+    - description: The monitor model
+      jsonPath: .spec.model.name
+      name: Model
+      type: string
+    - description: The monitor lastPush
+      jsonPath: .status.lastPush
+      name: lastPush
+      type: string
+    name: v1
     schema:
       openAPIV3Schema:
         description: Monitor is the Schema for the monitors API
@@ -58,6 +67,10 @@ spec:
             type: object
           status:
             description: MonitorStatus defines the observed state of Monitor
+            properties:
+              lastPush:
+                format: date-time
+                type: string
             type: object
         type: object
     served: true

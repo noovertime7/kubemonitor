@@ -18,6 +18,8 @@ package main
 
 import (
 	"flag"
+	"github.com/noovertime7/kubemonitor/pkg/metrics"
+	monitorRuntime "github.com/noovertime7/kubemonitor/runtime"
 
 	"github.com/noovertime7/kubemonitor/internal/writer"
 	"github.com/noovertime7/kubemonitor/pkg/input"
@@ -68,6 +70,7 @@ func main() {
 		metricsAddr          string
 		maxWriterQueueSize   int
 		writerBatch          int
+		region               string
 	)
 
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
@@ -78,6 +81,7 @@ func main() {
 	flag.StringVar(&logLevel, "log-level", "info", "log level")
 	flag.IntVar(&maxWriterQueueSize, "max-writer-queue-size", 1000000, "max-writer-queue-size")
 	flag.IntVar(&writerBatch, "writer-batch", 1000, "writer-batch")
+	flag.StringVar(&region, "region", "local", "monitor region")
 
 	opts := zap.Options{
 		Development: true,
@@ -92,6 +96,7 @@ func main() {
 
 	logger := zap.New(zap.UseFlagOptions(&opts), zap.JSONEncoder(func(encoderConfig *zapcore.EncoderConfig) {
 		encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	}), zap.Level(SetLevel(logLevel)))
 
 	ctrl.SetLogger(logger)
@@ -122,6 +127,9 @@ func main() {
 	writersMgr := writer.NewWriter(maxWriterQueueSize, writerBatch, logger)
 	wker := worker.NewWorker()
 
+	// 启动kubeMetrics
+	metrics.NewKubeMonitor(writersMgr, logger, region).Run(monitorRuntime.SystemContext.Done())
+
 	if err = controller.NewPrometheusPushReconciler(mgr.GetClient(), mgr.GetScheme(), writersMgr).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "PrometheusPush")
 		os.Exit(1)
@@ -143,7 +151,7 @@ func main() {
 	}
 
 	setupLog.Info("starting manager")
-	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
+	if err := mgr.Start(monitorRuntime.SystemContext); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}

@@ -22,6 +22,7 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/noovertime7/kubemonitor/internal/writer"
 	"github.com/noovertime7/kubemonitor/pkg/input"
+	"github.com/noovertime7/kubemonitor/pkg/process"
 	"github.com/noovertime7/kubemonitor/pkg/types"
 	"github.com/noovertime7/kubemonitor/pkg/worker"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -62,7 +63,14 @@ func (r *monitorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return ctrl.Result{}, err
 	}
 
+	if ok := r.worker.Exist(req.Name); ok {
+		logger.Info("monitor already start, skip...")
+		return ctrl.Result{}, nil
+	}
+
 	monitor := original.DeepCopy()
+	monitorWorker := NewMonitorWorker(r.Client, monitor, r.worker)
+
 	model := monitor.Spec.Model
 	logger = logger.WithValues("model", model.Name)
 
@@ -72,21 +80,20 @@ func (r *monitorReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	}
 	logger.Info("init handler config success")
 
-	r.worker.AddWorkerTask(monitor.Name)
+	monitorWorker.AddWorkerTask(monitor.Name)
 
-	err = r.worker.Run(monitor.Name, monitor.Spec.Period.Duration, func() {
+	err = monitorWorker.RunAfterPatchStatus(ctx, monitor.Name, monitor.Spec.Period.Duration, func() error {
 		err := r.factory.Gather(model.Name)
 		if err != nil {
-			logger.Error(err, "gather error")
-			return
+			return err
 		}
 		//r.factory.PopBackAll("mysql")
 		list, err := r.factory.List(model.Name)
 		if err != nil {
-			logger.Error(err, "factory list error")
-			return
+			return err
 		}
-		r.forward(logger, Process(list, monitor.Spec.Labels))
+		r.forward(logger, process.Process(list, monitor.Spec.Labels))
+		return nil
 	})
 	if err != nil {
 		logger.Error(err, "start  monitor error")

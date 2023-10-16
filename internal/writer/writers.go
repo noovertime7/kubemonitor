@@ -27,11 +27,13 @@ type (
 	}
 
 	Snapshot struct {
-		FailCount  uint64
-		FailTotal  uint64
-		TotalCount uint64
+		QueueFailCount  uint64
+		QueueFailTotal  uint64
+		QueueTotalCount uint64
+		QueueSize       uint64
 
-		QueueSize uint64
+		WriteTotalCount uint64
+		WriteFailTotal  uint64
 	}
 )
 
@@ -124,18 +126,28 @@ func (ws *Writers) WriteSamples(samples []*types2.Sample) {
 	if !success {
 		log.Printf("E! write %d samples failed, please increase queue size(%d)", len(items), l)
 	}
-	go ws.snapshot(uint64(len(items)), uint64(l), success)
+	go ws.snapshot(uint64(len(items)), uint64(l), success, "queue")
 }
 
-func (ws *Writers) snapshot(count, size uint64, success bool) {
+func (ws *Writers) snapshot(count, size uint64, success bool, mode string) {
 	ws.Lock()
 	defer ws.Unlock()
-	ws.TotalCount += count
-	ws.QueueSize = size
-	if !success {
-		ws.FailCount++
-		ws.FailTotal += count
+
+	switch mode {
+	case "queue":
+		ws.QueueTotalCount += count
+		ws.QueueSize = size
+		if !success {
+			ws.QueueFailCount++
+			ws.QueueFailTotal += count
+		}
+	case "write":
+		ws.WriteTotalCount += count
+		if !success {
+			ws.WriteFailTotal++
+		}
 	}
+
 }
 
 func (ws *Writers) QueueMetrics() *Snapshot {
@@ -156,7 +168,8 @@ func (ws *Writers) WriteTimeSeries(timeSeries []prompb.TimeSeries) {
 		wg.Add(1)
 		go func(key string) {
 			defer wg.Done()
-			ws.writerMap[key].Write(timeSeries)
+			err := ws.writerMap[key].Write(timeSeries)
+			ws.snapshot(1, 0, err == nil, "write")
 		}(key)
 	}
 	wg.Wait()

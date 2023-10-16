@@ -1,4 +1,4 @@
-package controller
+package process
 
 import (
 	"github.com/noovertime7/kubemonitor/internal/labels"
@@ -71,9 +71,11 @@ func Process(slist *types.SampleList, additionalLabels map[string]string) *types
 		}
 
 		// add additional Labels
-		for k, v := range additionalLabels {
-			if _, has := ss[i].Labels[k]; !has {
-				ss[i].Labels[k] = v
+		if additionalLabels != nil {
+			for k, v := range additionalLabels {
+				if _, has := ss[i].Labels[k]; !has {
+					ss[i].Labels[k] = v
+				}
 			}
 		}
 
