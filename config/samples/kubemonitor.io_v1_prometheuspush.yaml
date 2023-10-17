@@ -3,7 +3,8 @@ kind: PrometheusPush
 metadata:
   name: prometheuspush
 spec:
-  url: "http://192.168.11.207:9090/api/v1/write"
+#  url: "http://thanos-receiver.monitoring:19291/api/v1/receive"
+  url: "http://prometheus-k8s.monitoring:9090/api/v1/write"
   timeout: 10
   dial_timeout: 5
   max_idle_conns_per_host: 10

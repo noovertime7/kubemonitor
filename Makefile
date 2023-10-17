@@ -1,4 +1,4 @@
-
+Image=$(shell cat ./image.txt)
 # Image URL to use all building/pushing image targets
 IMG ?= controller:latest
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
@@ -65,14 +65,17 @@ test: manifests generate fmt vet envtest ## Run tests.
 	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out
 
 ##@ Build
-
 .PHONY: build
-build: manifests generate fmt vet ## Build manager binary.
-	go build -o bin/manager cmd/main.go
+# build
+build:
+	docker build -t ${Image} . 	--platform=linux/amd64
 
-.PHONY: run
-run: manifests generate fmt vet ## Run a controller from your host.
-	go run ./cmd/main.go
+.PHONY: buildPush
+# build and push
+buildPush:
+	make build
+	docker push ${Image}
+
 
 # If you wish to build the manager image targeting other platforms you can use the --platform flag.
 # (i.e. docker build --platform linux/arm64). However, you must enable docker buildKit for it.

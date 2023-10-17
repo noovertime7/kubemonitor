@@ -1,0 +1,1 @@
+harbor-tj.ts-it.cn/monitor/kubemonitor-controller:v0.0.1-beta1

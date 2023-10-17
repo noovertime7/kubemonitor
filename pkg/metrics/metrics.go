@@ -25,12 +25,11 @@ const (
 
 type KubeMonitor struct {
 	w      writer.WritersManager
-	region string
 	logger logr.Logger
 }
 
-func NewKubeMonitor(w writer.WritersManager, logger logr.Logger, region string) *KubeMonitor {
-	k := &KubeMonitor{w: w, logger: logger, region: region}
+func NewKubeMonitor(w writer.WritersManager, logger logr.Logger) *KubeMonitor {
+	k := &KubeMonitor{w: w, logger: logger}
 	return k
 }
 
@@ -42,12 +41,10 @@ func (k *KubeMonitor) Run(stopCh <-chan struct{}) {
 			select {
 			case <-time.After(metricInterval):
 				k.collectMetrics(sList)
-				processList := process.Process(sList, map[string]string{"region": k.region})
-
+				processList := process.Process(sList, map[string]string{"source": "kubemonitor"})
 				arr := processList.PopBackAll()
-
 				k.w.WriteSamples(arr)
-				k.logger.WithValues("region", k.region).Info("kubeMonitor write samples success")
+				k.logger.Info("kubeMonitor write samples success")
 			case <-stopCh:
 				k.logger.Info("kubemonitor metrics stop...")
 				return

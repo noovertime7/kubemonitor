@@ -70,7 +70,6 @@ func main() {
 		metricsAddr          string
 		maxWriterQueueSize   int
 		writerBatch          int
-		region               string
 	)
 
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
@@ -81,7 +80,6 @@ func main() {
 	flag.StringVar(&logLevel, "log-level", "info", "log level")
 	flag.IntVar(&maxWriterQueueSize, "max-writer-queue-size", 1000000, "max-writer-queue-size")
 	flag.IntVar(&writerBatch, "writer-batch", 1000, "writer-batch")
-	flag.StringVar(&region, "region", "local", "monitor region")
 
 	opts := zap.Options{
 		Development: true,
@@ -128,7 +126,7 @@ func main() {
 	wker := worker.NewWorker()
 
 	// 启动kubeMetrics
-	metrics.NewKubeMonitor(writersMgr, logger, region).Run(monitorRuntime.SystemContext.Done())
+	metrics.NewKubeMonitor(writersMgr, logger).Run(monitorRuntime.SystemContext.Done())
 
 	if err = controller.NewPrometheusPushReconciler(mgr.GetClient(), mgr.GetScheme(), writersMgr).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "PrometheusPush")

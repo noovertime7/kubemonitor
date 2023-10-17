@@ -10,14 +10,14 @@ metadata:
   name: monitor-sample
 spec:
   period: "15s"
-  labels:
-    region: test
+#  labels:
+#    region: test
   model:
     name: "mysql"
     config:
-      address: localhost:3306
+      address: mysql:3306
       username: root
-      password: "123456"
+      password: "Tsit@2022"
       parameters: ""
       timeout_seconds: "10"
       extra_status_metrics: "true"
