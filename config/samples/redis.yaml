@@ -1,14 +1,15 @@
 apiVersion: kubemonitor.io.kubemonitor.io/v1
 kind: Monitor
 metadata:
-  name: monitor-redis1
+  name: uc-redis1
 spec:
   labels:
-    region: test
+    name: redis
+    namespace: uc
   period: "25s"
   model:
     name: "redis"
     config:
-      address: "127.0.0.1"
+      address: "redis.uc"
       port: "6379"
       pool_size: "10"

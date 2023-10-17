@@ -10,8 +10,9 @@ metadata:
   name: monitor-sample
 spec:
   period: "15s"
-#  labels:
-#    region: test
+  labels:
+    name: mysql
+    namespace: kubemanage
   model:
     name: "mysql"
     config:
