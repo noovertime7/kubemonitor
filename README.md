@@ -1,6 +1,8 @@
 # kubemonitor
 // A kubernetes application indicator acquisition operator, which configures the acquisition task through CRD and sends it to Prometheus
 
+![image](https://github.com/noovertime7/kubemonitor/assets/100392073/0f5cec42-fea6-46d2-8642-469a85beb429)
+
 ## Getting Started
 
 ### Running on the cluster
