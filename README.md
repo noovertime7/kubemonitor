@@ -88,6 +88,12 @@ make manifests
 
 More information can be found via the [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
 
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/noovertime7/kubemonitor.svg)](https://starchart.cc/noovertime7/kubemonitor)
+
+
 ## License
 
 Copyright 2023.
